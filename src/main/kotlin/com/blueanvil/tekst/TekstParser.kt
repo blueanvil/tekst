@@ -1,7 +1,6 @@
 package com.blueanvil.tekst
 
 import org.tartarus.snowball.SnowballStemmer
-import org.tartarus.snowball.ext.englishStemmer
 
 /**
  * @author Cosmin Marginean
@@ -17,8 +16,8 @@ object TekstParser {
 
     internal val ALL_DELIMITERS = DELIMITERS + ALL_WHITESPACE
 
-    fun parse(text: String): List<Word> {
-        val words = mutableListOf<Word>()
+    fun words(text: String): List<TextMatch> {
+        val words = mutableListOf<TextMatch>()
         val chars = text.toCharArray()
 
         var cursor: WordCursor? = null
@@ -46,18 +45,51 @@ object TekstParser {
         return words
     }
 
-    fun findWords(text: String, searchWords: Collection<String>): List<Word> {
-        val stemmer: SnowballStemmer = englishStemmer()
-        val stemmedSearchWords = searchWords.map {
-            stemmer.current = it.toLowerCase()
-            stemmer.stem()
-            stemmer.current
+    fun findWords(text: String, searchWords: List<String>, stemmingLanguage: StemmingLanguage? = null): List<TextMatch> {
+        return if (stemmingLanguage != null) {
+            val stemmer = stemmingLanguage.newStemmer()
+            val wordsToSearch = stemmer.stem(searchWords)
+            words(text).filter {
+                stemmer.stem(it.text) in wordsToSearch
+            }
+        } else {
+            val lowerCaseWords = searchWords.map { it.toLowerCase() }
+            words(text).filter {
+                lowerCaseWords.contains(it.text.toLowerCase())
+            }
         }
+    }
 
-        return parse(text).filter {
-            stemmer.current = it.text.toLowerCase()
-            stemmer.stem()
-            stemmedSearchWords.contains(stemmer.current)
+    fun findSequence(text: String, sequence: String, stemmingLanguage: StemmingLanguage? = null): List<TextMatch> {
+        val textWords = words(text)
+        val sequenceWords = words(sequence)
+
+        val allMatches = mutableListOf<TextMatch>()
+        val stemmer = stemmingLanguage?.newStemmer()
+        for (i in 0..textWords.size - sequenceWords.size) {
+            if (sameWord(textWords[i].text, sequenceWords[0].text, stemmer)) {
+                var matchesSequence = true
+                for (j in 1 until sequenceWords.size) {
+                    if (!sameWord(textWords[i + j].text, sequenceWords[j].text, stemmer)) {
+                        matchesSequence = false
+                        break
+                    }
+                }
+                if (matchesSequence) {
+                    val startIndex = textWords[i].startIndex
+                    val endIndex = textWords[i + sequenceWords.size - 1].endIndex
+                    allMatches.add(TextMatch.extract(text, startIndex, endIndex))
+                }
+            }
+        }
+        return allMatches
+    }
+
+    internal fun sameWord(word1: String, word2: String, stemmer: SnowballStemmer? = null): Boolean {
+        return if (stemmer != null) {
+            stemmer.stem(word1) == stemmer.stem(word2)
+        } else {
+            word1.toLowerCase() == word2.toLowerCase()
         }
     }
 }
@@ -70,7 +102,7 @@ data class WordCursor(val startIndex: Int) {
         text.append(char)
     }
 
-    fun word(): Word {
-        return Word(text.toString(), startIndex)
+    fun word(): TextMatch {
+        return TextMatch(text.toString(), startIndex)
     }
 }

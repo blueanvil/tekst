@@ -1,7 +1,6 @@
 package com.blueanvil.tekst
 
-import org.tartarus.snowball.ext.englishStemmer
-import org.testng.Assert.assertTrue
+import org.testng.Assert.*
 import org.testng.annotations.Test
 import kotlin.random.Random
 
@@ -12,10 +11,10 @@ import kotlin.random.Random
 class TekstParserTest {
 
     @Test
-    fun simpleParse() {
-        assertIsWords("You want respect?", "You", "want", "respect")
-        assertIsWords("Go out and get it for yourself.", "Go", "out", "and", "get", "it", "for", "yourself")
-        assertIsWords("You’re going to need a stronger stomach if you’re going to be back in the kitchen seeing how the sausage is made.",
+    fun words() {
+        assertMatches("You want respect?", "You", "want", "respect")
+        assertMatches("Go out and get it for yourself.", "Go", "out", "and", "get", "it", "for", "yourself")
+        assertMatches("You’re going to need a stronger stomach if you’re going to be back in the kitchen seeing how the sausage is made.",
                 "You", "re", "going", "to", "need", "a", "stronger", "stomach", "if", "you", "re",
                 "going", "to", "be", "back", "in", "the", "kitchen", "seeing", "how", "the", "sausage", "is", "made")
     }
@@ -30,7 +29,7 @@ class TekstParserTest {
             }.toCharArray())
 
             println("\n---Testing:\n$testText\n---")
-            assertIsWords(testText, TekstParser.parse(textSample))
+            assertMatches(testText, TekstParser.words(textSample))
         }
     }
 
@@ -39,41 +38,78 @@ class TekstParserTest {
         val text = "I'm glad this is an environment where you feel free to fail."
 
         val expected = listOf(
-                Word("environment", text.indexOf("environment")),
-                Word("fail", text.indexOf("fail"))
+                TextMatch("environment", text.indexOf("environment")),
+                TextMatch("fail", text.indexOf("fail"))
         )
 
-        assertSameWords(TekstParser.findWords(text, listOf("fail", "eNvironment")), expected)
-        assertSameWords(TekstParser.findWords(text, listOf("Failed", "enVIRonments")), expected)
-        assertSameWords(TekstParser.findWords(text, listOf("faiLING", "Environments")), expected)
+        assertSameMatches(TekstParser.findWords(text, listOf("fail", "eNvironment")), expected)
+        assertSameMatches(TekstParser.findWords(text, listOf("Failed", "enVIRonments")), expected)
+        assertSameMatches(TekstParser.findWords(text, listOf("faiLING", "Environments")), expected)
 
-        assertSameWords(TekstParser.findWords(text, listOf("frEEing")), listOf(Word("free", text.indexOf("free"))))
-        assertSameWords(TekstParser.findWords(text, listOf("feeLS")), listOf(Word("feel", text.indexOf("feel"))))
+        assertSameMatches(TekstParser.findWords(text, listOf("frEEing")), listOf(TextMatch("free", text.indexOf("free"))))
+        assertSameMatches(TekstParser.findWords(text, listOf("feeLS")), listOf(TextMatch("feel", text.indexOf("feel"))))
+    }
+
+    @Test
+    fun sameWord() {
+        assertTrue(TekstParser.sameWord("trust", "TRUST"))
+        assertTrue(TekstParser.sameWord("trust", "trUST"))
+
+        assertFalse(TekstParser.sameWord("trust", "trUSTing"))
+
+        assertTrue(TekstParser.sameWord("trust", "trUSTing", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(TekstParser.sameWord("game", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(TekstParser.sameWord("games", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(TekstParser.sameWord("and", "and", StemmingLanguage.ENGLISH.newStemmer()))
+    }
+
+    @Test
+    fun findSequenceBasics() {
+        assertEquals(
+                listOf(TextMatch("cut down on your drinking", 29)),
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "cut down on your drinking")
+        )
+
+        assertEquals(
+                listOf(TextMatch("They say", 0)),
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "They say")
+        )
+
+        assertEquals(
+                listOf(TextMatch("you have a drinking problem", 56)),
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "you have a drinking problem")
+        )
+    }
+
+    @Test
+    fun findSequenceStemming() {
+        assertEquals(
+                listOf(TextMatch("fun and games", 9)),
+                TekstParser.findSequence("It’s all fun and games till they shoot you in the face.", "fun and gaming", StemmingLanguage.ENGLISH)
+        )
     }
 
     @Test
     fun play() {
-        val stemmer = englishStemmer()
-        stemmer.current = "environmental"
-        stemmer.stem()
-        println(stemmer.current)
+        println(StemmingLanguage.ENGLISH.newStemmer().stem("games"))
+        println(StemmingLanguage.ENGLISH.newStemmer().stem("gaming"))
     }
 
     // Do not use this with stemming
-    private fun assertIsWords(text: String, vararg textWords: String) {
-        val words = mutableListOf<Word>()
+    private fun assertMatches(text: String, vararg textWords: String) {
+        val matches = mutableListOf<TextMatch>()
         textWords.forEachIndexed { index, it ->
-            val startIndex = if (index == 0) 0 else words[index - 1].endIndex
-            words.add(Word(it, text.indexOf(it, startIndex)))
+            val startIndex = if (index == 0) 0 else matches[index - 1].endIndex
+            matches.add(TextMatch(it, text.indexOf(it, startIndex)))
         }
-        assertIsWords(text, words)
+        assertMatches(text, matches)
     }
 
-    private fun assertIsWords(text: String, words: Collection<Word>) {
-        assertSameWords(TekstParser.parse(text), words)
+    private fun assertMatches(text: String, textMatches: Collection<TextMatch>) {
+        assertSameMatches(TekstParser.words(text), textMatches)
     }
 
-    private fun assertSameWords(actual: Collection<Word>, expected: Collection<Word>) {
+    private fun assertSameMatches(actual: Collection<TextMatch>, expected: Collection<TextMatch>) {
         assertTrue(actual == expected, "Different lists:\nExpected: $expected\nActual  : $actual")
     }
 
