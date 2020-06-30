@@ -19,7 +19,7 @@ class TekstParserTest {
                 "going", "to", "be", "back", "in", "the", "kitchen", "seeing", "how", "the", "sausage", "is", "made")
     }
 
-    @Test(dependsOnMethods = ["simpleParse"])
+    @Test(dependsOnMethods = ["words"])
     fun testSeparators() {
         textSamples.forEach { textSample ->
             val testText = String(textSample.toCharArray().map {
@@ -43,11 +43,11 @@ class TekstParserTest {
         )
 
         assertSameMatches(TekstParser.findWords(text, listOf("fail", "eNvironment")), expected)
-        assertSameMatches(TekstParser.findWords(text, listOf("Failed", "enVIRonments")), expected)
-        assertSameMatches(TekstParser.findWords(text, listOf("faiLING", "Environments")), expected)
+        assertSameMatches(TekstParser.findWords(text, listOf("Failed", "enVIRonments"), StemmingLanguage.ENGLISH), expected)
+        assertSameMatches(TekstParser.findWords(text, listOf("faiLING", "Environments"), StemmingLanguage.ENGLISH), expected)
 
-        assertSameMatches(TekstParser.findWords(text, listOf("frEEing")), listOf(TextMatch("free", text.indexOf("free"))))
-        assertSameMatches(TekstParser.findWords(text, listOf("feeLS")), listOf(TextMatch("feel", text.indexOf("feel"))))
+        assertSameMatches(TekstParser.findWords(text, listOf("frEEing"), StemmingLanguage.ENGLISH), listOf(TextMatch("free", text.indexOf("free"))))
+        assertSameMatches(TekstParser.findWords(text, listOf("feeLS"), StemmingLanguage.ENGLISH), listOf(TextMatch("feel", text.indexOf("feel"))))
     }
 
     @Test
