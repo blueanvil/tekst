@@ -1,8 +1,10 @@
 package com.blueanvil.tekst
 
+import org.tartarus.snowball.ext.englishStemmer
 import org.testng.Assert.assertTrue
 import org.testng.annotations.Test
 import kotlin.random.Random
+
 
 /**
  * @author Cosmin Marginean
@@ -32,7 +34,33 @@ class TekstParserTest {
         }
     }
 
-    fun assertIsWords(text: String, vararg textWords: String) {
+    @Test
+    fun findWords() {
+        val text = "I'm glad this is an environment where you feel free to fail."
+
+        val expected = listOf(
+                Word("environment", text.indexOf("environment")),
+                Word("fail", text.indexOf("fail"))
+        )
+
+        assertSameWords(TekstParser.findWords(text, listOf("fail", "environment")), expected)
+        assertSameWords(TekstParser.findWords(text, listOf("failed", "environments")), expected)
+        assertSameWords(TekstParser.findWords(text, listOf("failing", "environments")), expected)
+
+        assertSameWords(TekstParser.findWords(text, listOf("freeing")), listOf(Word("free", text.indexOf("free"))))
+        assertSameWords(TekstParser.findWords(text, listOf("feels")), listOf(Word("feel", text.indexOf("feel"))))
+    }
+
+    @Test
+    fun play() {
+        val stemmer = englishStemmer()
+        stemmer.current = "environmental"
+        stemmer.stem()
+        println(stemmer.current)
+    }
+
+    // Do not use this with stemming
+    private fun assertIsWords(text: String, vararg textWords: String) {
         val words = mutableListOf<Word>()
         textWords.forEachIndexed { index, it ->
             val startIndex = if (index == 0) 0 else words[index - 1].endIndex
@@ -41,9 +69,12 @@ class TekstParserTest {
         assertIsWords(text, words)
     }
 
-    fun assertIsWords(text: String, words: Collection<Word>) {
-        val parsedWords = TekstParser.parse(text)
-        assertTrue(parsedWords == words, "Different lists:\nExpected: $words\nActual  : $parsedWords")
+    private fun assertIsWords(text: String, words: Collection<Word>) {
+        assertSameWords(TekstParser.parse(text), words)
+    }
+
+    private fun assertSameWords(actual: Collection<Word>, expected: Collection<Word>) {
+        assertTrue(actual == expected, "Different lists:\nExpected: $expected\nActual  : $actual")
     }
 
     companion object {

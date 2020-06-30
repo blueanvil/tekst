@@ -1,5 +1,8 @@
 package com.blueanvil.tekst
 
+import org.tartarus.snowball.SnowballStemmer
+import org.tartarus.snowball.ext.englishStemmer
+
 /**
  * @author Cosmin Marginean
  */
@@ -41,6 +44,21 @@ object TekstParser {
             words.add(cursor.word())
         }
         return words
+    }
+
+    fun findWords(text: String, searchWords: Collection<String>): List<Word> {
+        val stemmer: SnowballStemmer = englishStemmer()
+        val stemmedSearchWords = searchWords.map {
+            stemmer.current = it
+            stemmer.stem()
+            stemmer.current
+        }
+
+        return parse(text).filter {
+            stemmer.current = it.text
+            stemmer.stem()
+            stemmedSearchWords.contains(stemmer.current)
+        }
     }
 }
 
