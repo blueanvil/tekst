@@ -67,17 +67,17 @@ class TekstParserTest {
     fun findSequenceBasics() {
         assertEquals(
                 listOf(TextMatch("cut down on your drinking", 29)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "cut down on your drinking")
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "cut DOWN on your drinking")
         )
 
         assertEquals(
                 listOf(TextMatch("They say", 0)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "They say")
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "they Say")
         )
 
         assertEquals(
                 listOf(TextMatch("you have a drinking problem", 56)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "you have a drinking problem")
+                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "you HavE a drinking PROBLEM")
         )
     }
 
