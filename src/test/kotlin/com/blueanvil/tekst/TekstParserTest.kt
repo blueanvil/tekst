@@ -43,12 +43,12 @@ class TekstParserTest {
                 Word("fail", text.indexOf("fail"))
         )
 
-        assertSameWords(TekstParser.findWords(text, listOf("fail", "environment")), expected)
-        assertSameWords(TekstParser.findWords(text, listOf("failed", "environments")), expected)
-        assertSameWords(TekstParser.findWords(text, listOf("failing", "environments")), expected)
+        assertSameWords(TekstParser.findWords(text, listOf("fail", "eNvironment")), expected)
+        assertSameWords(TekstParser.findWords(text, listOf("Failed", "enVIRonments")), expected)
+        assertSameWords(TekstParser.findWords(text, listOf("faiLING", "Environments")), expected)
 
-        assertSameWords(TekstParser.findWords(text, listOf("freeing")), listOf(Word("free", text.indexOf("free"))))
-        assertSameWords(TekstParser.findWords(text, listOf("feels")), listOf(Word("feel", text.indexOf("feel"))))
+        assertSameWords(TekstParser.findWords(text, listOf("frEEing")), listOf(Word("free", text.indexOf("free"))))
+        assertSameWords(TekstParser.findWords(text, listOf("feeLS")), listOf(Word("feel", text.indexOf("feel"))))
     }
 
     @Test

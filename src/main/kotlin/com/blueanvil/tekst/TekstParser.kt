@@ -49,13 +49,13 @@ object TekstParser {
     fun findWords(text: String, searchWords: Collection<String>): List<Word> {
         val stemmer: SnowballStemmer = englishStemmer()
         val stemmedSearchWords = searchWords.map {
-            stemmer.current = it
+            stemmer.current = it.toLowerCase()
             stemmer.stem()
             stemmer.current
         }
 
         return parse(text).filter {
-            stemmer.current = it.text
+            stemmer.current = it.text.toLowerCase()
             stemmer.stem()
             stemmedSearchWords.contains(stemmer.current)
         }
