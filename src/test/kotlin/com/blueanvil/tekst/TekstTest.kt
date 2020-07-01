@@ -2,13 +2,14 @@ package com.blueanvil.tekst
 
 import org.testng.Assert.*
 import org.testng.annotations.Test
+import java.io.FileOutputStream
 import kotlin.random.Random
 
 
 /**
  * @author Cosmin Marginean
  */
-class TekstParserTest {
+class TekstTest {
 
     @Test
     fun words() {
@@ -24,12 +25,12 @@ class TekstParserTest {
         textSamples.forEach { textSample ->
             val testText = String(textSample.toCharArray().map {
                 if (it == ' ')
-                    TekstParser.ALL_DELIMITERS[Random.nextInt(0, TekstParser.ALL_DELIMITERS.length)]
+                    Tekst.ALL_DELIMITERS[Random.nextInt(0, Tekst.ALL_DELIMITERS.length)]
                 else it
             }.toCharArray())
 
             println("\n---Testing:\n$testText\n---")
-            assertMatches(testText, TekstParser.words(textSample))
+            assertMatches(testText, Tekst.words(textSample))
         }
     }
 
@@ -37,47 +38,53 @@ class TekstParserTest {
     fun findWords() {
         val text = "I'm glad this is an environment where you feel free to fail."
 
-        val expected = listOf(
-                TextMatch("environment", text.indexOf("environment")),
-                TextMatch("fail", text.indexOf("fail"))
-        )
+        assertSameMatches(Tekst.find(text, "fail"), listOf(TextMatch("fail", text.indexOf("fail"))))
+        assertSameMatches(Tekst.find(text, "Failed", StemmingLanguage.ENGLISH), listOf(TextMatch("fail", text.indexOf("fail"))))
+        assertSameMatches(Tekst.find(text, "faiLING", StemmingLanguage.ENGLISH), listOf(TextMatch("fail", text.indexOf("fail"))))
+        assertSameMatches(Tekst.find(text, "eNvironment", StemmingLanguage.ENGLISH), listOf(TextMatch("environment", text.indexOf("environment"))))
+        assertSameMatches(Tekst.find(text, "enVIRonments", StemmingLanguage.ENGLISH), listOf(TextMatch("environment", text.indexOf("environment"))))
 
-        assertSameMatches(TekstParser.findWords(text, listOf("fail", "eNvironment")), expected)
-        assertSameMatches(TekstParser.findWords(text, listOf("Failed", "enVIRonments"), StemmingLanguage.ENGLISH), expected)
-        assertSameMatches(TekstParser.findWords(text, listOf("faiLING", "Environments"), StemmingLanguage.ENGLISH), expected)
-
-        assertSameMatches(TekstParser.findWords(text, listOf("frEEing"), StemmingLanguage.ENGLISH), listOf(TextMatch("free", text.indexOf("free"))))
-        assertSameMatches(TekstParser.findWords(text, listOf("feeLS"), StemmingLanguage.ENGLISH), listOf(TextMatch("feel", text.indexOf("feel"))))
+        assertSameMatches(Tekst.find(text, "frEEing", StemmingLanguage.ENGLISH), listOf(TextMatch("free", text.indexOf("free"))))
+        assertSameMatches(Tekst.find(text, "feeLS", StemmingLanguage.ENGLISH), listOf(TextMatch("feel", text.indexOf("feel"))))
     }
 
     @Test
     fun sameWord() {
-        assertTrue(TekstParser.sameWord("trust", "TRUST"))
-        assertTrue(TekstParser.sameWord("trust", "trUST"))
+        assertTrue(Tekst.sameWord("trust", "TRUST"))
+        assertTrue(Tekst.sameWord("trust", "trUST"))
 
-        assertFalse(TekstParser.sameWord("trust", "trUSTing"))
+        assertFalse(Tekst.sameWord("trust", "trUSTing"))
 
-        assertTrue(TekstParser.sameWord("trust", "trUSTing", StemmingLanguage.ENGLISH.newStemmer()))
-        assertTrue(TekstParser.sameWord("game", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
-        assertTrue(TekstParser.sameWord("games", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
-        assertTrue(TekstParser.sameWord("and", "and", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(Tekst.sameWord("trust", "trUSTing", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(Tekst.sameWord("game", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(Tekst.sameWord("games", "gaming", StemmingLanguage.ENGLISH.newStemmer()))
+        assertTrue(Tekst.sameWord("and", "and", StemmingLanguage.ENGLISH.newStemmer()))
     }
 
     @Test
     fun findSequenceBasics() {
         assertEquals(
                 listOf(TextMatch("cut down on your drinking", 29)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "cut DOWN on your drinking")
+                Tekst.find("They say as soon you have to cut down on your drinking, you have a drinking problem.", "cut DOWN on your drinking")
         )
 
         assertEquals(
                 listOf(TextMatch("They say", 0)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "they Say")
+                Tekst.find("They say as soon you have to cut down on your drinking, you have a drinking problem.", "they Say")
         )
 
         assertEquals(
                 listOf(TextMatch("you have a drinking problem", 56)),
-                TekstParser.findSequence("They say as soon you have to cut down on your drinking, you have a drinking problem.", "you HavE a drinking PROBLEM")
+                Tekst.find("They say as soon you have to cut down on your drinking, you have a drinking problem.", "you HavE a drinking PROBLEM")
+        )
+
+        assertEquals(
+                TextMatch("They say", 0),
+                Tekst.find("They say as soon you have to cut down on your drinking, you have a drinking problem.", listOf("they   say", "you HavE a drinking PROBLEM"))["they   say"]!![0]
+        )
+        assertEquals(
+                TextMatch("you have a drinking problem", 56),
+                Tekst.find("They say as soon you have to cut down on your drinking, you have a drinking problem.", listOf("they   say", "you HavE a drinking PROBLEM"))["you HavE a drinking PROBLEM"]!![0]
         )
     }
 
@@ -85,14 +92,22 @@ class TekstParserTest {
     fun findSequenceStemming() {
         assertEquals(
                 listOf(TextMatch("fun and games", 9)),
-                TekstParser.findSequence("It’s all fun and games till they shoot you in the face.", "fun and gaming", StemmingLanguage.ENGLISH)
+                Tekst.find("It’s all fun and games till they shoot you in the face.", "fun and gaming", StemmingLanguage.ENGLISH)
         )
     }
 
     @Test
     fun play() {
-        println(StemmingLanguage.ENGLISH.newStemmer().stem("games"))
-        println(StemmingLanguage.ENGLISH.newStemmer().stem("gaming"))
+        val text = "“I’m not a serpent!” said Alice indignantly. “Let me alone!”\n" +
+                "\n" +
+                "“Serpent, I say again!” repeated the Pigeon, but in a more subdued tone, and added with a kind of sob, “I’ve tried every way, and nothing seems to suit them!”\n" +
+                "\n" +
+                "“I haven’t the least idea what you’re talking about,” said Alice.\n" +
+                "\n" +
+                "“I’ve tried the roots of trees, and I’ve tried banks, and I’ve tried hedges,” the Pigeon went on, without attending to her; “but those serpents! There’s no pleasing them!”\n" +
+                "\n" +
+                "Alice was more and more puzzled, but she thought there was no use in saying anything more till the Pigeon had finished.\n"
+        Tekst.highlightHtml(text, listOf("try", "talk"), FileOutputStream("output.html"), StemmingLanguage.ENGLISH)
     }
 
     // Do not use this with stemming
@@ -106,7 +121,7 @@ class TekstParserTest {
     }
 
     private fun assertMatches(text: String, textMatches: Collection<TextMatch>) {
-        assertSameMatches(TekstParser.words(text), textMatches)
+        assertSameMatches(Tekst.words(text), textMatches)
     }
 
     private fun assertSameMatches(actual: Collection<TextMatch>, expected: Collection<TextMatch>) {
