@@ -36,3 +36,11 @@ Matches for 'Petty':
 Matches for 'Vindictive Individuals':
 	TextMatch(text=vindictive individual, startIndex=72)
 ```
+
+## Demo of highlighting using `TextMatch`
+```kotlin
+        val textToHighlight = "“I’m not a serpent!” said Alice indignantly. “Let me alone!” “Serpent, I say again!” repeated the Pigeon, but in a more subdued tone, and added with a kind of sob, “I’ve tried every way, and nothing seems to suit them!” “I haven’t the least idea what you’re talking about,” said Alice. “I’ve tried the roots of trees, and I’ve tried banks, and I’ve tried hedges,” the Pigeon went on, without attending to her; “but those serpents! There’s no pleasing them!” Alice was more and more puzzled, but she thought there was no use in saying anything more till the Pigeon had finished."
+        Tekst.highlightHtml(textToHighlight, listOf("try", "talk", "serpent said"), FileOutputStream("output.html"), StemmingLanguage.ENGLISH)
+```
+
+
