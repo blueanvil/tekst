@@ -96,18 +96,27 @@ class TekstTest {
         )
     }
 
+    /**
+     * This is just a test to show case main capabilities
+     */
     @Test
-    fun play() {
-        val text = "“I’m not a serpent!” said Alice indignantly. “Let me alone!”\n" +
-                "\n" +
-                "“Serpent, I say again!” repeated the Pigeon, but in a more subdued tone, and added with a kind of sob, “I’ve tried every way, and nothing seems to suit them!”\n" +
-                "\n" +
-                "“I haven’t the least idea what you’re talking about,” said Alice.\n" +
-                "\n" +
-                "“I’ve tried the roots of trees, and I’ve tried banks, and I’ve tried hedges,” the Pigeon went on, without attending to her; “but those serpents! There’s no pleasing them!”\n" +
-                "\n" +
-                "Alice was more and more puzzled, but she thought there was no use in saying anything more till the Pigeon had finished.\n"
-        Tekst.highlightHtml(text, listOf("try", "talk"), FileOutputStream("output.html"), StemmingLanguage.ENGLISH)
+    fun showCase() {
+        val textWords = "If your tantrum has subsided, you’re welcome to join us."
+        println(Tekst.words(textWords))
+
+
+        val text = "I thought it would look petty and vindictive not to," +
+                " and as a petty and vindictive individual I have to" +
+                " take extra care not to appear petty or vindictive."
+        Tekst.find(text, listOf("Petty", "Vindictive Individuals"), StemmingLanguage.ENGLISH)
+                .forEach { searchTerm, matches ->
+                    println("Matches for '$searchTerm':")
+                    matches.forEach { println("\t" + it) }
+                }
+
+
+        val textToHighlight = "“I’m not a serpent!” said Alice indignantly. “Let me alone!” “Serpent, I say again!” repeated the Pigeon, but in a more subdued tone, and added with a kind of sob, “I’ve tried every way, and nothing seems to suit them!” “I haven’t the least idea what you’re talking about,” said Alice. “I’ve tried the roots of trees, and I’ve tried banks, and I’ve tried hedges,” the Pigeon went on, without attending to her; “but those serpents! There’s no pleasing them!” Alice was more and more puzzled, but she thought there was no use in saying anything more till the Pigeon had finished."
+        Tekst.highlightHtml(textToHighlight, listOf("try", "talk", "serpent said"), FileOutputStream("output.html"), StemmingLanguage.ENGLISH)
     }
 
     // Do not use this with stemming
