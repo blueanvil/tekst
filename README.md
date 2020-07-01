@@ -4,7 +4,7 @@ Tekst is a Kotlin library for basic text processing and parsing.
 
 TODO: How to get it.
 
-### Find occurrences of a string in a text
+## Find occurrences of a string in a text
 ```kotlin
 val text = "I thought it would look petty and vindictive not to," +
         " and as a petty and vindictive individual I have to" +
