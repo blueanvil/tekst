@@ -1,6 +1,3 @@
-group = 'com.blueanvil'
-version = '0.9.0'
-
 buildscript {
     apply from: 'dependencies.gradle'
 
@@ -16,14 +13,17 @@ buildscript {
     }
 }
 
-apply plugin: 'jacoco'
-apply plugin: 'java'
-apply plugin: 'java-library'
-apply plugin: 'kotlin'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'org.jetbrains.dokka'
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.70'
+    id 'java-library'
+    id 'jacoco'
+    id 'org.jetbrains.dokka' version '0.10.1'
+    id 'com.github.kt3k.coveralls' version '2.8.4'
+}
 
+group = 'com.blueanvil'
+version = '0.9.0'
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
