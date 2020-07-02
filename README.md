@@ -1,7 +1,7 @@
 # Tekst
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.com/blueanvil/tekst.svg?branch=master)](https://travis-ci.com/blueanvil/tekst)
-![Codecov](https://img.shields.io/codecov/c/github/blueanvil/tekst)
+[![Coverage Status](https://coveralls.io/repos/github/blueanvil/tekst/badge.svg)](https://coveralls.io/github/blueanvil/tekst)
 
 Tekst is a Kotlin library for basic text processing and parsing.
 
