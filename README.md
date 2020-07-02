@@ -1,4 +1,6 @@
 # Tekst
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 Tekst is a Kotlin library for basic text processing and parsing.
 
@@ -38,7 +40,7 @@ Matches for 'Vindictive Individuals':
 ```
 
 ## Invert matches
-This can be useful if you want to extract the text "around" the matches or text that didn't match the search string
+This can be useful if you want to extract the text "around" the matches, or text that didn't match the search string.
 ```kotlin
 val txt = "I'm glad this is an environment where you feel free to fail."
 val envMatches = Tekst.find(txt, "environment", StemmingLanguage.ENGLISH)
@@ -61,5 +63,6 @@ Tekst.highlightHtml(textToHighlight, listOf("try", "talk", "serpent said"), File
 ![alt text](https://github.com/blueanvil/tekst/blob/master/etc/docs/highlight-demo.png)
 
 
-
-
+# License Information
+* The code is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+* The project uses code from the [Snowball](https://snowballstem.org/) project, licensed as derscribed [here](https://snowballstem.org/license.html). The same copy right notice is included in the root package of the source code: https://raw.githubusercontent.com/blueanvil/tekst/master/src/main/resources/snowball-copyright-notice.txt
