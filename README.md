@@ -37,6 +37,20 @@ Matches for 'Vindictive Individuals':
 	TextMatch(text=vindictive individual, startIndex=72)
 ```
 
+## Invert matches
+This can be useful if you want to extract the text "around" the matches or text that didn't match the search string
+```kotlin
+val txt = "I'm glad this is an environment where you feel free to fail."
+val envMatches = Tekst.find(txt, "environment", StemmingLanguage.ENGLISH)
+println(envMatches)
+println(TextMatch.invertMatches(txt, envMatches))
+```
+##### Output
+```
+[TextMatch(text=environment, startIndex=20)]
+[TextMatch(text=I'm glad this is an , startIndex=0), TextMatch(text= where you feel free to fail., startIndex=31)]
+```
+
 ## Highlighting demo
 This uses the output of a `find()` method call to produce a sample HTML with the matches for each of the searched strings.
 ```kotlin
