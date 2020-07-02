@@ -13,7 +13,7 @@ repositories {
 ```
 ```
 dependencies {
-    implementation 'com.github.blueanvil:tekst:0.9.0'
+    implementation 'com.github.blueanvil:tekst:0.9.1'
 }
 ```
 
