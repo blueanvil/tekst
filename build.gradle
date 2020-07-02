@@ -55,8 +55,7 @@ dokka {
 
 jacocoTestReport {
     reports {
-        xml.enabled false
-        csv.enabled false
+        xml.enabled true
         html.destination file("${buildDir}/jacocoHtml")
     }
 }
@@ -69,3 +68,5 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 test {
     useTestNG()
 }
+
+check.dependsOn jacocoTestReport
