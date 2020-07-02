@@ -20,7 +20,13 @@ class TekstTest {
                 "going", "to", "be", "back", "in", "the", "kitchen", "seeing", "how", "the", "sausage", "is", "made")
     }
 
-    @Test(dependsOnMethods = ["words"])
+    @Test
+    fun noMatches() {
+        assertTrue(Tekst.find("Dissatisfaction is a symptom of ambition. It’s the coal that fuels the fire", "stardom", StemmingLanguage.ENGLISH).isEmpty())
+        assertTrue(Tekst.find("Dissatisfaction is a symptom of ambition. It’s the coal that fuels the fire", listOf("stardom"), StemmingLanguage.ENGLISH)["stardom"]!!.isEmpty())
+    }
+
+    @Test
     fun testSeparators() {
         textSamples.forEach { textSample ->
             val testText = String(textSample.toCharArray().map {
