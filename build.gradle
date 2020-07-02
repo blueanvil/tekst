@@ -1,16 +1,5 @@
 buildscript {
     apply from: 'dependencies.gradle'
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
-    }
 }
 
 plugins {
@@ -25,23 +14,13 @@ plugins {
 group = 'com.blueanvil'
 version = '0.9.0'
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-
     compile "org.slf4j:slf4j-api:$slf4jVersion"
 
     testCompile "org.testng:testng:$testNgVersion"
@@ -77,4 +56,3 @@ coveralls {
     sourceDirs += ['src/main/kotlin']
     jacocoReportPath 'build/reports/jacoco/test/jacocoTestReport.xml'
 }
-
