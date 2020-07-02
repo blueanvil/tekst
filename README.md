@@ -63,3 +63,6 @@ Tekst.highlightHtml(textToHighlight, listOf("try", "talk", "serpent said"), File
 
 
 
+# License Information
+* The code is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+* The project uses code from the [Snowball](https://snowballstem.org/) project, licensed as derscribed [here](https://snowballstem.org/license.html). The same copy right notice is included in the root package of the source code: https://raw.githubusercontent.com/blueanvil/tekst/master/src/main/resources/snowball-copyright-notice.txt
