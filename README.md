@@ -1,4 +1,6 @@
 # Tekst
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 Tekst is a Kotlin library for basic text processing and parsing.
 
