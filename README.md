@@ -5,9 +5,19 @@
 
 Tekst is a Kotlin library for basic text processing and parsing.
 
-TODO: How to get it.
+# Gradle
+```
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+```
+```
+dependencies {
+    implementation 'com.github.blueanvil:tekst:0.9.0'
+}
+```
 
-
+# Usage
 ## Split text into words
 ```kotlin
 val textWords = "If your tantrum has subsided, you’re welcome to join us."
