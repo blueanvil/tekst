@@ -8,8 +8,6 @@ plugins {
     id 'java-library'
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.8.4'
-    id "com.eden.orchidPlugin" version "0.21.0"
-
 }
 
 group = 'com.blueanvil'
@@ -19,16 +17,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    maven { url = "https://kotlin.bintray.com/kotlinx/" }
-
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
-    orchidRuntime "io.github.javaeden.orchid:OrchidDocs:0.21.0"
-    orchidRuntime "io.github.javaeden.orchid:OrchidKotlindoc:0.21.0"
-    orchidRuntime "io.github.javaeden.orchid:OrchidPluginDocs:0.21.0"
 
     testCompile "org.testng:testng:$testNgVersion"
     testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
@@ -57,10 +50,4 @@ test {
 coveralls {
     sourceDirs += ['src/main/kotlin']
     jacocoReportPath 'build/reports/jacoco/test/jacocoTestReport.xml'
-}
-
-orchid {
-    theme = "Editorial"
-    baseUrl = "https://username.github.io/project"
-    version = "1.0.0"
 }
