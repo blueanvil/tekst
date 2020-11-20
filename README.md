@@ -45,7 +45,7 @@ Tekst.find(text = text,
         }
 ```
 ##### Output
-```
+```kotlin
 Matches for 'Petty':
 	TextMatch(text=petty, startIndex=24)
 	TextMatch(text=petty, startIndex=62)
